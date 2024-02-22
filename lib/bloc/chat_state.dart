@@ -1,12 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-part of 'chat_bloc_bloc.dart';
+part of 'chat_bloc.dart';
 
 @immutable
-sealed class ChatBlocState {}
+sealed class ChatState {}
 
-final class ChatBlocInitial extends ChatBlocState {}
+final class ChatInitial extends ChatState {}
 
-class ChatSuccessState extends ChatBlocState {
+class ChatSuccessState extends ChatState {
   final List<ChatMessageModel> messages;
   ChatSuccessState({
     required this.messages,

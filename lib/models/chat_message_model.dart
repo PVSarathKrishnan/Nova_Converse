@@ -2,49 +2,54 @@
 import 'dart:convert';
 
 class ChatMessageModel {
-  final String Role;
-
-  final List<ChartPartModel> parts;
-
-  ChatMessageModel({required this.Role, required this.parts});
+  final String role;
+  final List<ChatPartModel> parts;
+  ChatMessageModel({
+    required this.role,
+    required this.parts,
+  });
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'Role': Role,
+    return {
+      'role': role,
       'parts': parts.map((x) => x.toMap()).toList(),
     };
   }
 
   factory ChatMessageModel.fromMap(Map<String, dynamic> map) {
     return ChatMessageModel(
-      Role: map['Role'] as String,
-      parts: List<ChartPartModel>.from((map['parts'] as List<int>).map<ChartPartModel>((x) => ChartPartModel.fromMap(x as Map<String,dynamic>),),),
+      role: map['role'] ?? '',
+      parts: List<ChatPartModel>.from(
+          map['parts']?.map((x) => ChatPartModel.fromMap(x))),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory ChatMessageModel.fromJson(String source) => ChatMessageModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ChatMessageModel.fromJson(String source) =>
+      ChatMessageModel.fromMap(json.decode(source));
 }
 
-class ChartPartModel {
+class ChatPartModel {
   final String text;
-
-  ChartPartModel({required this.text});
+  ChatPartModel({
+    required this.text,
+  });
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'text': text,
     };
   }
 
-  factory ChartPartModel.fromMap(Map<String, dynamic> map) {
-    return ChartPartModel(
-      text: map['text'] as String,
+  factory ChatPartModel.fromMap(Map<String, dynamic> map) {
+    return ChatPartModel(
+      text: map['text'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory ChartPartModel.fromJson(String source) => ChartPartModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ChatPartModel.fromJson(String source) =>
+      ChatPartModel.fromMap(json.decode(source));
 }

@@ -1,15 +1,15 @@
-
 import 'package:code_guide/models/chat_message_model.dart';
 import 'package:code_guide/utils/constants.dart';
 import 'package:dio/dio.dart';
 
 class ChatRepo {
-  static chatTextGenerationRepo(List<ChatMessageModel> previousMessages) async {
+  static Future<String> chatTextGenerationRepo(
+      List<ChatMessageModel> previousMessages) async {
     try {
       Dio dio = Dio();
 
-      final response = dio.post(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=$apiKey",
+      final response = await dio.post(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}",
           data: {
             "contents": previousMessages.map((e) => e.toMap()).toList(),
             "generationConfig": {
@@ -38,9 +38,14 @@ class ChatRepo {
               }
             ]
           });
-      print(response.toString());
+      if (response.statusCode! >= 200 && response.statusCode! < 300) {
+        return response
+            .data["candidates"].first["content"]["parts"].first["text"];
+      }
+      return '';
     } catch (e) {
       print(e.toString());
+      return "";
     }
   }
 }

@@ -1,93 +1,173 @@
-import 'package:code_guide/bloc/chat_bloc_bloc.dart';
+import 'dart:ui';
+
+import 'package:code_guide/bloc/chat_bloc.dart';
 import 'package:code_guide/models/chat_message_model.dart';
+import 'package:code_guide/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final ChatBloc chatBloc = ChatBloc();
+  ScrollController chatScrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
+  ChatBloc chatBloc = ChatBloc();
+
+  void scrollToBottom() {
+    if (chatScrollController.hasClients) {
+      final position = chatScrollController.position.maxScrollExtent;
+      chatScrollController.animateTo(position,
+          duration: Duration(seconds: 1), curve: Curves.easeOut);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<ChatBloc, ChatBlocState>(
+      extendBodyBehindAppBar: true,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(50),
+        child: AppBar(
+          automaticallyImplyLeading: false, // Disable leading/back button
+          centerTitle: true,
+          title: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 48.0),
+            child: Text(
+              "NovaConverse",
+              style: text1(),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(55),
+              bottomRight: Radius.circular(55),
+            ),
+          ),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      ),
+      body: BlocConsumer<ChatBloc, ChatState>(
+        bloc: chatBloc,
         listener: (context, state) {},
         builder: (context, state) {
           switch (state.runtimeType) {
             case ChatSuccessState:
               List<ChatMessageModel> messages =
                   (state as ChatSuccessState).messages;
-
               return Column(
                 children: [
-                  Container(
-                    width: double.maxFinite,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(55),
-                            bottomRight: Radius.circular(55))),
-                    height: 120,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 48.0,
-                      ),
-                      child: Text(
-                        "CodNexa",
-                        style: text1(),
-                        textAlign: TextAlign.center,
+                  Expanded(
+                    child: GestureDetector(
+                      onPanStart: (details) {},
+                      child: ListView.builder(
+                        controller: chatScrollController,
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          // Align messages based on sender
+                          final alignment = messages[index].role == "user"
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft;
+
+                          return Align(
+                            alignment: alignment,
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 5),
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: messages[index].role == "user"
+                                    ? Color(0XFF04A3FF).withOpacity(.7)
+                                    : Color(0XFFFD04FE).withOpacity(.5),
+                                borderRadius: messages[index].role == "user"
+                                    ? BorderRadius.only(
+                                        bottomLeft: Radius.circular(50),
+                                        topLeft: Radius.circular(50),
+                                        topRight: Radius.circular(50))
+                                    : BorderRadius.only(
+                                        bottomRight: Radius.circular(50),
+                                        topLeft: Radius.circular(50),
+                                        topRight: Radius.circular(50)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    messages[index].role == "user"
+                                        ? "You"
+                                        : "Bot",
+                                    style: text2(),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(messages[index].parts.first.text,
+                                      style: messages[index].role == "user"
+                                          ? text()
+                                          : text().copyWith(
+                                              fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
-                  Expanded(
-                      child: ListView.builder(
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                                padding: EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                    color: Colors.amber,
-                                    borderRadius: BorderRadius.circular(25)),
-                                child: Text(messages[index].parts.first.text));
-                          })),
                   Container(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 35),
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 35, top: 10),
                       child: Row(
                         children: [
+                          if (chatBloc.gen == true)
+                            Lottie.asset("lib/assets/loading.json",
+                                height: 50,
+                                width: 50,
+                                filterQuality: FilterQuality.high),
                           Expanded(
-                              child: TextField(
-                            controller: textEditingController,
-                            style: TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
+                            child: TextField(
+                              controller: textEditingController,
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                hintText: "Ask questions to AI",
+                                hintStyle: TextStyle(
+                                  color: Colors.black.withOpacity(.4),
+                                ),
                                 fillColor: Colors.white,
                                 filled: true,
                                 border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black),
-                                    borderRadius: BorderRadius.circular(100)),
+                                  borderSide: BorderSide(color: Colors.black),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
                                 focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100),
-                                    borderSide: BorderSide(
-                                        color:
-                                            Theme.of(context).primaryColor))),
-                          )),
+                                  borderRadius: BorderRadius.circular(100),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                           SizedBox(
                             width: 10,
                           ),
                           InkWell(
                             onTap: () {
                               if (textEditingController.text.isNotEmpty) {
-                                chatBloc.add(ChatGenerateNewTextMessageEvent(
-                                  inputMessage: textEditingController.text,
-                                ));
+                                String text = textEditingController.text;
+                                textEditingController.clear();
+                                chatBloc.add(ChatGenerateNewTextEvent(
+                                    inputMessage: text));
+                                if (chatBloc.gen == false) {
+                                  scrollToBottom();
+                                }
                               }
                             },
                             child: CircleAvatar(
@@ -103,24 +183,44 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               );
 
             default:
               return SizedBox(
-                child: Center(child: Text("something wrong")),
+                child: Center(child: Text("sOMETHING")),
               );
           }
         },
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 90.0),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: Colors.white.withOpacity(0.3), // Adjust opacity as needed
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 10,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: FloatingActionButton.small(
+            onPressed: scrollToBottom,
+            child: Icon(Icons.arrow_downward),
+            backgroundColor: Colors.transparent,
+            elevation: 0, // No elevation
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
-
-  TextStyle text1() =>
-      GoogleFonts.josefinSans(fontSize: 28, fontWeight: FontWeight.bold);
 }
