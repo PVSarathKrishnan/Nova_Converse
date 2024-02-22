@@ -12,17 +12,17 @@ class Splash1 extends StatefulWidget {
 
 class _Splash1State extends State<Splash1> {
   bool _showWelcomeText = true;
-
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2), () {
+    // After 2 seconds, fade in the welcome text
+    Future.delayed(Duration(seconds: 1), () {
       setState(() {
-        _showWelcomeText = false;
+        _showWelcomeText = true;
       });
     });
     // After 4 seconds, navigate to Splash2
-    Future.delayed(Duration(seconds: 4), () {
+    Future.delayed(Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => Splash2()),
       );
@@ -36,7 +36,7 @@ class _Splash1State extends State<Splash1> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedOpacity(
-            duration: Duration(seconds: 2),
+            duration: Duration(seconds: 1),
             opacity: _showWelcomeText ? 1.0 : 0.0,
             child: Column(
               children: [

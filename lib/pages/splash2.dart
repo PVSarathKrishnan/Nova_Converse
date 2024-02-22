@@ -24,7 +24,7 @@ class _Splash2State extends State<Splash2> {
       });
     });
     // After 4 seconds, navigate to Splash2
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => StartUpPage()),
       );
@@ -38,7 +38,7 @@ class _Splash2State extends State<Splash2> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           AnimatedOpacity(
-            duration: Duration(seconds: 2),
+            duration: Duration(seconds: 1),
             opacity: _showWelcomeText ? 1.0 : 0.0,
             child: Column(
               children: [
