@@ -1,7 +1,7 @@
 import 'package:code_guide/pages/home_page.dart';
+import 'package:code_guide/pages/startup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:code_guide/utils/styles.dart';
-import 'package:code_guide/pages/splash2.dart';
 import 'package:lottie/lottie.dart';
 
 class Splash2 extends StatefulWidget {
@@ -26,7 +26,7 @@ class _Splash2State extends State<Splash2> {
     // After 4 seconds, navigate to Splash2
     Future.delayed(Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => StartUpPage()),
       );
     });
   }

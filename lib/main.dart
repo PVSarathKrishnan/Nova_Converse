@@ -1,6 +1,5 @@
-import 'package:code_guide/pages/home_page.dart';
-import 'package:code_guide/pages/splash2.dart';
 import 'package:code_guide/pages/splash1.dart';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(new MyApp());

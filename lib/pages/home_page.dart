@@ -5,7 +5,6 @@ import 'package:code_guide/models/chat_message_model.dart';
 import 'package:code_guide/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
 class HomePage extends StatefulWidget {
@@ -83,8 +82,9 @@ class _HomePageState extends State<HomePage> {
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 color: messages[index].role == "user"
-                                    ? Color(0XFF04A3FF).withOpacity(.7)
-                                    : Color(0XFFFD04FE).withOpacity(.5),
+                                    ? Color(0XFF04A3FF).withOpacity(.4)
+                                    : Color.fromARGB(255, 79, 79, 79)
+                                        .withOpacity(.5),
                                 borderRadius: messages[index].role == "user"
                                     ? BorderRadius.only(
                                         bottomLeft: Radius.circular(50),
@@ -159,29 +159,50 @@ class _HomePageState extends State<HomePage> {
                             width: 10,
                           ),
                           InkWell(
-                            onTap: () {
-                              if (textEditingController.text.isNotEmpty) {
-                                String text = textEditingController.text;
-                                textEditingController.clear();
-                                chatBloc.add(ChatGenerateNewTextEvent(
-                                    inputMessage: text));
-                                if (chatBloc.gen == false) {
-                                  scrollToBottom();
-                                }
-                              }
-                            },
+                            onTap: chatBloc.gen == false
+                                ? () {
+                                    if (textEditingController.text.isNotEmpty) {
+                                      String text = textEditingController.text;
+                                      textEditingController.clear();
+                                      chatBloc.add(ChatGenerateNewTextEvent(
+                                          inputMessage: text));
+                                      if (chatBloc.gen == false) {
+                                        scrollToBottom();
+                                      }
+                                    }
+                                  }
+                                : () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("Text is generating"),
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor,
+                                        behavior: SnackBarBehavior.floating,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                    );
+                                  },
                             child: CircleAvatar(
                               radius: 29,
                               backgroundColor: Colors.white,
                               child: CircleAvatar(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                radius: 26,
-                                child: Icon(
-                                  Icons.send_rounded,
-                                  color: Colors.white,
-                                  size: 29,
-                                ),
-                              ),
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  radius: 26,
+                                  child: chatBloc.gen == false
+                                      ? Icon(
+                                          Icons.send_rounded,
+                                          color: Colors.white,
+                                          size: 29,
+                                        )
+                                      : Icon(
+                                          Icons.pause_circle,
+                                          color: Colors.white,
+                                          size: 29,
+                                        )),
                             ),
                           ),
                         ],
