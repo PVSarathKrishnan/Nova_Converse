@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:code_guide/bloc/chat_bloc.dart';
 import 'package:code_guide/models/chat_message_model.dart';
+import 'package:code_guide/pages/startup_page.dart';
 import 'package:code_guide/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,12 +35,22 @@ class _HomePageState extends State<HomePage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
         child: AppBar(
-          automaticallyImplyLeading: false, // Disable leading/back button
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 22, bottom: 5),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new),
+              onPressed: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => StartUpPage(),
+                ));
+              },
+            ),
+          ),
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.symmetric(vertical: 48.0),
             child: Text(
-              "NovaConverse",
+              "Nova Converse",
               style: text1(),
               textAlign: TextAlign.center,
             ),
